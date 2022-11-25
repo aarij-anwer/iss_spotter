@@ -1,7 +1,7 @@
 const request = require('request');
-let URL = "https://api.ipify.org?format=json";
 
 const fetchMyIP = function(callback) {
+  let URL = "https://api.ipify.org?format=json";
   request(URL, (error, response, body) => {
     if (error) {
       callback(error);
@@ -40,4 +40,32 @@ const fetchCoordsByIP = function(ip, callback) {
   });
 };
 
-module.exports = { fetchMyIP, fetchCoordsByIP };
+/**
+ * Makes a single API request to retrieve upcoming ISS fly over times the for the given lat/lng coordinates.
+ * Input:
+ *   - An object with keys `latitude` and `longitude`
+ *   - A callback (to pass back an error or the array of resulting data)
+ * Returns (via Callback):
+ *   - An error, if any (nullable)
+ *   - The fly over times as an array of objects (null if error). Example:
+ *     [ { risetime: 134564234, duration: 600 }, ... ]
+ */
+const fetchISSFlyOverTimes = function(coords, callback) {
+  // ...
+  let URL = "https://iss-flyover.herokuapp.com/json/?" + "lat=" + coords.latitude + "&lon=" + coords.longitude;
+  // console.log(URL);
+
+  request(URL, (error, response, data) => {
+    if (error) {
+      callback(error);
+    } else if (response.statusCode === 200) {
+      let answer = JSON.parse(data).response;
+      callback(false, answer);
+    } else {
+      callback(false, data);
+    }
+  });
+  
+};
+
+module.exports = { fetchMyIP, fetchCoordsByIP, fetchISSFlyOverTimes };
